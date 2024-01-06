@@ -99,34 +99,30 @@ namespace STUN
 			{
                 Thread.Sleep(10);
 				Console.WriteLine("Waiting for UDP Identification ...");
-               
-				string myData = Encoding.ASCII.GetString(UDPClient.Receive(ref groupEp));
-                string[] dataFormat = myData.Split('1',2);
-                dataFormat[1] = "1" + dataFormat[1];
 
-				string[] format = groupEp.ToString()?.Split(':',2);
-				string ClientIPAddress = format?[0],
-                       ClientPort = format?[1];
+                IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, port);
+                UDPClient.Receive(ref anyIP);
 
                 if (Clients != null){              
 					foreach (KeyValuePair<int, SocketHelper> entry in Clients)
 					{
 						SocketHelper client = entry.Value;
 
-						if (client.ClientIPAddress == ClientIPAddress)
+						if (client.ClientIPAddress == anyIP.Address.ToString())
 						{
-							client.ClientUDPPort = ClientPort;
+							client.ClientUDPPort = anyIP.Port.ToString();
 
-							Console.WriteLine($"Recieved UDP Data from client: {ClientIPAddress}. " +
+							Console.WriteLine($"Recieved UDP Data from client: {client.ClientId}. " +
 								$"\nThe TCP Port of Client is: {client.ClientPort}. " +
 								$"\nThe UDP Port of Client is: {client.ClientUDPPort} ");
 
 							BufferStream buffer = new(NetworkConfig.BufferSize, NetworkConfig.BufferAlignment);
 							buffer.Seek(0);
-							buffer.Write((UInt16)252);
-							buffer.Write(dataFormat[1]);
-							client.SendMessage(buffer);
-                            break;
+							buffer.Write((UInt16)0);
+							buffer.Write((UInt16)InterfaceTCPMessageType.StationUDPDataReport);
+							buffer.Write(client.ClientUDPPort);
+							client.SendMessage(buffer);							
+							break;
 						}
 					}
 				}               

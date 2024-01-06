@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace STUN
+﻿namespace STUN
 {
 	enum InterfaceTCPApplicationStatus
 	{
@@ -16,6 +10,7 @@ namespace STUN
 	enum InterfaceTCPMessageType
 	{
 		InitialStationDataReport = 0,
+		StationUDPDataReport = 1,
 
 	}
 }
