@@ -75,7 +75,13 @@ namespace STUN
                 TcpClient tcpClient = TCPListener.AcceptTcpClient();
                 Console.WriteLine("\nNew client detected. Connecting client...");
                 SocketHelper helper = new SocketHelper();
-                helper.StartClient(tcpClient, this, rnd.Next(0,4096));
+
+                int PropId = rnd.Next(0, 4096);
+                while (Clients.ContainsKey(PropId)) {
+					PropId = rnd.Next(0, 4096);
+				}
+
+                helper.StartClient(tcpClient, this, PropId);
                 Clients?.Add(helper.ClientId,helper);
             }
             Console.WriteLine("Listen Thread has been cancelled on main server!");
